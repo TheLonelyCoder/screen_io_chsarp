@@ -6,17 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <!-- Gemeinsame API -->
+  <!-- Wichtig: erst aus dem Default-Wildcard rausnehmen -->
   <ItemGroup>
-    <Compile Include="AnsiSetup.cs" />
+    <Compile Remove="AnsiSetup.Windows.cs" />
+    <Compile Remove="AnsiSetup.Unix.cs" />
   </ItemGroup>
 
-  <!-- Windows-spezifische Implementierung -->
+  <!-- Dann zielabhängig genau eine wieder reinnehmen -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <Compile Include="AnsiSetup.Windows.cs" />
   </ItemGroup>
 
-  <!-- Unix / Default -->
   <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
     <Compile Include="AnsiSetup.Unix.cs" />
   </ItemGroup>

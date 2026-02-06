@@ -1,8 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace AnsiVideoTerminal;
-
-/* 
+﻿/* 
     --------------------------------------------------------------------------------------------------------------------------
     VideoTerminal Class (.NET Core, ANSI Terminals only (on Windows, cmd must be started with 'Admin' rights to
     enable the support of ANSI Control sequences.
@@ -15,7 +11,7 @@ namespace AnsiVideoTerminal;
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
-     
+    2026-02-06    0.0.0.5     Make Terminal Platform independent     
     2026-02-06    0.0.0.4     Transfer to empty Linux project
     2025          0.0.0.3     Some experience collected with Test implementation
     2024          0.0.0.2     Test implementation for Windows with .NET Core
@@ -23,6 +19,8 @@ namespace AnsiVideoTerminal;
     --------------------------------------------------------------------------------------------------------------------------
 
 */
+
+namespace AnsiVideoTerminal;
 
 public enum TerminalColors
 {
