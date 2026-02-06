@@ -9,7 +9,7 @@
   <!-- Wichtig: erst aus dem Default-Wildcard rausnehmen -->
   <ItemGroup>
     <Compile Remove="AnsiSetup.Windows.cs" />
-    <Compile Remove="AnsiSetup.Unix.cs" />
+    <Compile Remove="AnsiSetup.Linux.cs" />
   </ItemGroup>
 
   <!-- Dann zielabhängig genau eine wieder reinnehmen -->
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
-    <Compile Include="AnsiSetup.Unix.cs" />
+    <Compile Include="AnsiSetup.Linux.cs" />
   </ItemGroup>
 
 </Project>

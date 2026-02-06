@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-06    0.0.0.6     First Test of class
     2026-02-06    0.0.0.5     Make Terminal Platform independent     
     2026-02-06    0.0.0.4     Transfer to empty Linux project
     2025          0.0.0.3     Some experience collected with Test implementation
@@ -42,51 +43,58 @@ public enum TerminalColorsArea
 
 public class VideoTerminal
 {
-    int _row = 1;
-    int _col = 1;
-    int _maxRow = -1;
-    int _maxCol = -1;
+    TerminalColors _currentForeGround = TerminalColors.Green;
+    TerminalColors _currentBackGround = TerminalColors.Black;
 
-    TerminalColors _defaultColorForeGround = TerminalColors.Green;
-    TerminalColors _defaultColorBackGround = TerminalColors.Black;
-    TerminalColors _currentColorForeGround = TerminalColors.Green;
-    TerminalColors _currentColorBackGround = TerminalColors.Black;
-
-    #region Some static methods ....
-
-    // P/Invoke declarations
-    private const int STD_OUTPUT_HANDLE = -11;
-    private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    private static extern IntPtr GetStdHandle(int nStdHandle);
-
-    [DllImport("kernel32.dll")]
-    private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
-
-    [DllImport("kernel32.dll")]
-    private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
-
-    public static void SetupAnsiTerminal()
+    public void Clear()
     {
-        // Get the handle to the standard output stream
-        var handle = VideoTerminal.GetStdHandle(VideoTerminal.STD_OUTPUT_HANDLE);
-
-        // Get the current console mode
-        uint mode;
-        if (!VideoTerminal.GetConsoleMode(handle, out mode))
-        {
-            Console.Error.WriteLine("Failed to get console mode");
-            return;
-        }
-
-        // Enable the virtual terminal processing mode
-        mode |= VideoTerminal.ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-        if (!VideoTerminal.SetConsoleMode(handle, mode))
-        {
-            Console.Error.WriteLine("Failed to set console mode");
-            return;
-        }
+        // Clear screen + cursor home
+        WriteRaw("\x1b[2J\x1b[H");
     }
 
-}
+    public void GotoXY(int row, int col)
+    {
+        if (row < 1) row = 1;
+        if (col < 1) col = 1;
+
+        WriteRaw($"\x1b[{row};{col}H");
+    }
+
+    public void SetColor(TerminalColors foreGround, TerminalColors backGround)
+    {
+        _currentForeGround = foreGround;
+        _currentBackGround = backGround;
+
+        int fg = 30 + (int)foreGround;
+        int bg = 40 + (int)backGround;
+
+        WriteRaw($"\x1b[{fg};{bg}m");
+    }
+
+    public void ResetColor()
+    {
+        WriteRaw("\x1b[0m");
+    }
+
+    public void Write(string text)
+    {
+        Console.Write(text);
+    }
+
+    public void WriteLine(string text)
+    {
+        Console.WriteLine(text);
+    }
+
+    public void WriteAt(int row, int col, string text)
+    {
+        GotoXY(row, col);
+        Write(text);
+    }
+
+    private static void WriteRaw(string ansi)
+    {
+        Console.Write(ansi);
+    }
+}    
+
