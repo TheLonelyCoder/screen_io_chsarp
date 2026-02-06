@@ -1,2 +1,3 @@
-Das ist mal das Readme
+[b] VideoTerminal Screen I/O [b]
 
+Inspired by Clipper (c) '@ say/get - read'
