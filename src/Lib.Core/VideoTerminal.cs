@@ -1,4 +1,6 @@
-﻿namespace AnsiVideoTerminal;
+﻿using System.Runtime.InteropServices;
+
+namespace AnsiVideoTerminal;
 
 /* 
     --------------------------------------------------------------------------------------------------------------------------
@@ -39,7 +41,54 @@ public enum TerminalColorsArea
     ForeGround = 30,
     BackGround = 40,
 }
-public class Class1
+
+public class VideoTerminal
 {
+    int _row = 1;
+    int _col = 1;
+    int _maxRow = -1;
+    int _maxCol = -1;
+
+    TerminalColors _defaultColorForeGround = TerminalColors.Green;
+    TerminalColors _defaultColorBackGround = TerminalColors.Black;
+    TerminalColors _currentColorForeGround = TerminalColors.Green;
+    TerminalColors _currentColorBackGround = TerminalColors.Black;
+
+    #region Some static methods ....
+
+    // P/Invoke declarations
+    private const int STD_OUTPUT_HANDLE = -11;
+    private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr GetStdHandle(int nStdHandle);
+
+    [DllImport("kernel32.dll")]
+    private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+
+    [DllImport("kernel32.dll")]
+    private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+
+    public static void SetupAnsiTerminal()
+    {
+        // Get the handle to the standard output stream
+        var handle = VideoTerminal.GetStdHandle(VideoTerminal.STD_OUTPUT_HANDLE);
+
+        // Get the current console mode
+        uint mode;
+        if (!VideoTerminal.GetConsoleMode(handle, out mode))
+        {
+            Console.Error.WriteLine("Failed to get console mode");
+            return;
+        }
+
+        // Enable the virtual terminal processing mode
+        mode |= VideoTerminal.ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+        if (!VideoTerminal.SetConsoleMode(handle, mode))
+        {
+            Console.Error.WriteLine("Failed to set console mode");
+            return;
+        }
+    }
 
 }

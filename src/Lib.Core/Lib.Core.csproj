@@ -1,9 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <!-- Gemeinsame API -->
+  <ItemGroup>
+    <Compile Include="AnsiSetup.cs" />
+  </ItemGroup>
+
+  <!-- Windows-spezifische Implementierung -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+    <Compile Include="AnsiSetup.Windows.cs" />
+  </ItemGroup>
+
+  <!-- Unix / Default -->
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
+    <Compile Include="AnsiSetup.Unix.cs" />
+  </ItemGroup>
 
 </Project>
