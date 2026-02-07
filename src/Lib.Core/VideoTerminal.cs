@@ -11,7 +11,8 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
-    2ß26-02-07    0.0.0.7     addes some features from existing code
+    2026-02-07    0.0.0.8     code cleanup after AI consultation
+    2026-02-07    0.0.0.7     addes some features from existing code
     2026-02-06    0.0.0.6     First Test of class
     2026-02-06    0.0.0.5     Make Terminal Platform independent     
     2026-02-06    0.0.0.4     Transfer to empty Linux project
@@ -108,16 +109,6 @@ public class VideoTerminal
     }
     */
 
-    public void ResetColor()
-    {
-        WriteRaw("\x1b[0m");
-    }
-
-    private static void WriteRaw(string ansi)
-    {
-        Console.Write(ansi);
-    }
-
     public void Write(int row, int col, string text)
     {
         _col = col;
@@ -125,12 +116,14 @@ public class VideoTerminal
         Console.Write($"\x1b[{_row};{_col}H{text}");
     }
 
-    public void ResetColors()
+    // changes colors back to default value (used by some drawing procedures)
+    public void ResetColorToDefault()
     {
         _currentColorForeGround = _defaultColorForeGround;
         _currentColorBackGround = _defaultColorBackGround;
     }
 
+    // TODO: MaxRow ignores the value - analyze if ever needed to set 
     public int MaxRow
     {
         get
@@ -143,6 +136,7 @@ public class VideoTerminal
         }
     }
 
+    // TODO: MaxCol ignores the value - analyze if ever needed to set 
     public int MaxCol
     {
         get

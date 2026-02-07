@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <FileVersion>0.0.0.7</FileVersion>
+    <FileVersion>0.0.0.8</FileVersion>
   </PropertyGroup>
 
   <!-- Wichtig: erst aus dem Default-Wildcard rausnehmen -->

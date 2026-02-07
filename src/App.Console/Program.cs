@@ -10,7 +10,8 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
-    2ß26-02-07    0.0.0.1     changed to new class methods
+    2026-02-07    0.0.0.2     code cleanup in VideoTerminal started
+    2026-02-07    0.0.0.1     changed to new class methods
     2026-02-06    0.0.0.0     First Test of class
     --------------------------------------------------------------------------------------------------------------------------
 
@@ -28,4 +29,4 @@ vt.SetColor(TerminalColors.Green, TerminalColors.Black);
 vt.Write(1, 1, "ANSI ready");
 vt.Write(3, 1, "Press any key...");
 Console.ReadKey(true);
-vt.ResetColor();
+
