@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-07    0.0.0.9     primary/secondary screen buffer
     2026-02-07    0.0.0.8     code cleanup after AI consultation
     2026-02-07    0.0.0.7     addes some features from existing code
     2026-02-06    0.0.0.6     First Test of class
@@ -64,6 +65,16 @@ public class VideoTerminal
         this.ClearHome();
         _maxRow = Console.WindowHeight;
         _maxCol = Console.WindowWidth;
+    }
+
+    public void UseSecondoryBuffer()
+    {
+        Console.Write("\x1b[?1049h");
+    }
+
+    public void UsePrimaryBuffer()
+    {
+        Console.Write("\x1b[?1049l");
     }
 
     /*
