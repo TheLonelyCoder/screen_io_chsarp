@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-08    0.0.0.12    code cleanup 
     2026-02-08    0.0.0.11    code cleanup
     2026-02-08    0.0.0.10    primary/secondary screen buffer bug fixing
     2026-02-07    0.0.0.9     primary/secondary screen buffer
@@ -136,8 +137,7 @@ public class VideoTerminal : IDisposable
     // changes colors back to default value (used by some drawing procedures)
     public void ResetColorToDefault()
     {
-        _currentColorForeGround = _defaultColorForeGround;
-        _currentColorBackGround = _defaultColorBackGround;
+        SetColor(_defaultColorForeGround, _defaultColorBackGround);
     }
 
     public int MaxRow => Console.WindowHeight;
@@ -436,16 +436,12 @@ public class VideoTerminal : IDisposable
 
     public void SetColor(TerminalColors foreGround, TerminalColors backGround)
     {
+        _currentColorForeGround = foreGround;
+        _currentColorBackGround = backGround;
+
         Console.Write($"\x1b[{(int)TerminalColorsArea.ForeGround + (int)foreGround}m\x1b[{(int)TerminalColorsArea.BackGround + (int)backGround}m");
     }
 
-    /*
-    public void SetColor(ItemColor color)
-    {
-        Console.Write($"\x1b[{(int)TerminalColorsArea.ForeGround + (int)color.ForeGround}m\x1b[{(int)TerminalColorsArea.BackGround + (int)color.BackGround}m");
-    }
-    */
-    
     public void SetBold(bool bold = true)
     {
         if (bold)
@@ -468,10 +464,10 @@ public class VideoTerminal : IDisposable
             return;
         }
 
-        // Clean Up
-        CursorOn();
-        UsePrimaryBuffer();
-        // ResetAttributes();
+        try { ColorReset(); } catch { }     // ESC[0m
+        try { CursorOn(); } catch { }
+        try { UsePrimaryBuffer(); } catch { }
+        try { Console.Out.Flush(); } catch { }
 
         _disposed = true;
     }
