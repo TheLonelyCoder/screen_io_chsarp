@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-08    0.0.0.6     "Ctrl-C" Cleanup activated
     2026-02-08    0.0.0.5     Cursor ON / OFF testing
     2026-02-07    0.0.0.4     Primary/Secondary Screen Buffer tested
     2026-02-07    0.0.0.3     Box Method tested
@@ -22,13 +23,15 @@
 
 using AnsiVideoTerminal;
 
-
 var appVer = typeof(Program).Assembly.GetName().Version?.ToString() ?? "?";
 var libVer = typeof(VideoTerminal).Assembly.GetName().Version?.ToString() ?? "?";
 
 AnsiSetup.SetupAnsiTerminal();
 
 var vt = new VideoTerminal();
+AppDomain.CurrentDomain.ProcessExit += (_, __) => vt.Dispose();
+Console.CancelKeyPress += (_, __) => vt.Dispose();
+        
 vt.CursorOff();
 vt.UseSecondaryBuffer();
 vt.ClearScreen();
