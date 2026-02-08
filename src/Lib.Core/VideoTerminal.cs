@@ -11,7 +11,8 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
-    2026-02-07    0.0.0.10    primary/secondary screen buffer bug fixing
+    2026-02-08    0.0.0.11    code cleanup
+    2026-02-08    0.0.0.10    primary/secondary screen buffer bug fixing
     2026-02-07    0.0.0.9     primary/secondary screen buffer
     2026-02-07    0.0.0.8     code cleanup after AI consultation
     2026-02-07    0.0.0.7     addes some features from existing code
@@ -45,13 +46,13 @@ public enum TerminalColorsArea
     BackGround = 40,
 }
 
-public class VideoTerminal
+public class VideoTerminal : IDisposable
 {
 
     int _row = 1;
     int _col = 1;
-    int _maxRow = -1;
-    int _maxCol = -1;
+
+    bool _inSecondary = false;
 
     TerminalColors _defaultColorForeGround = TerminalColors.Green;
     TerminalColors _defaultColorBackGround = TerminalColors.Black;
@@ -63,18 +64,18 @@ public class VideoTerminal
     public VideoTerminal()
     {
         this.SetColor(_defaultColorForeGround, _defaultColorBackGround);
-        _maxRow = Console.WindowHeight;
-        _maxCol = Console.WindowWidth;
     }
 
     public void UseSecondaryBuffer()
     {
         Console.Write("\x1b[?1049h");
+        _inSecondary = true;
     }
 
     public void UsePrimaryBuffer()
     {
         Console.Write("\x1b[?1049l");
+        _inSecondary = false;
     }
 
     public void CursorOff()
@@ -139,32 +140,9 @@ public class VideoTerminal
         _currentColorBackGround = _defaultColorBackGround;
     }
 
-    // TODO: MaxRow ignores the value - analyze if ever needed to set 
-    public int MaxRow
-    {
-        get
-        {
-            return _maxRow;
-        }
-        set
-        {
-            _maxRow = Console.WindowHeight;
-        }
-    }
-
-    // TODO: MaxCol ignores the value - analyze if ever needed to set 
-    public int MaxCol
-    {
-        get
-        {
-            return _maxCol;
-        }
-        set
-        {
-            _maxCol = Console.WindowWidth;
-        }
-    }
-
+    public int MaxRow => Console.WindowHeight;
+    public int MaxCol => Console.WindowWidth;
+  
     public void ClearScreen(int mode = 2)
     {
         Console.Write($"\x1b[{mode}J");
@@ -215,17 +193,17 @@ public class VideoTerminal
             Console.Write($"\x1b[H\x1b(0");
 
             Console.Write("l");
-            Console.Write(new string('q', _maxCol - 2));
+            Console.Write(new string('q', this.MaxCol - 2));
             Console.Write("k");
-            Console.Write($"\x1b[{_maxRow - 1}H");
+            Console.Write($"\x1b[{this.MaxRow - 1}H");
             Console.Write("m");
-            Console.Write(new string('q', _maxCol - 2));
+            Console.Write(new string('q', this.MaxCol - 2));
             Console.Write("j");
 
-            for (int r = 2; r < _maxRow - 1; r++)
+            for (int r = 2; r < this.MaxRow - 1; r++)
             {
                 Console.Write($"\x1b[{r};1Hx");
-                Console.Write($"\x1b[{r};{_maxCol}Hx");
+                Console.Write($"\x1b[{r};{this.MaxCol}Hx");
             }
 
             Console.Write($"\x1b[H\x1b(B");
@@ -235,17 +213,17 @@ public class VideoTerminal
             Console.Write($"\x1b[H");
 
             Console.Write("+");
-            Console.Write(new string('-', _maxCol - 2));
+            Console.Write(new string('-', this.MaxCol - 2));
             Console.Write("+");
-            Console.Write($"\x1b[{_maxRow - 1}H");
+            Console.Write($"\x1b[{this.MaxRow - 1}H");
             Console.Write("+");
-            Console.Write(new string('-', _maxCol - 2));
+            Console.Write(new string('-', this.MaxCol - 2));
             Console.Write("+");
 
-            for (int r = 2; r < _maxRow - 1; r++)
+            for (int r = 2; r < this.MaxRow - 1; r++)
             {
                 Console.Write($"\x1b[{r};1H|");
-                Console.Write($"\x1b[{r};{_maxCol}H|");
+                Console.Write($"\x1b[{r};{this.MaxCol}H|");
             }
         }
 
@@ -259,17 +237,17 @@ public class VideoTerminal
             Console.Write($"\x1b[{row};{col}H\x1b(0");
 
             Console.Write("l");
-            Console.Write(new string('q', _maxCol - 2));
+            Console.Write(new string('q', this.MaxCol - 2));
             Console.Write("k");
-            Console.Write($"\x1b[{_maxRow - 1}H");
+            Console.Write($"\x1b[{this.MaxRow - 1}H");
             Console.Write("m");
-            Console.Write(new string('q', _maxCol - 2));
+            Console.Write(new string('q', this.MaxCol - 2));
             Console.Write("j");
 
-            for (int r = 2; r < _maxRow - 1; r++)
+            for (int r = 2; r < this.MaxRow - 1; r++)
             {
                 Console.Write($"\x1b[{r};1Hx");
-                Console.Write($"\x1b[{r};{_maxCol}Hx");
+                Console.Write($"\x1b[{r};{this.MaxCol}Hx");
             }
 
             Console.Write($"\x1b[H\x1b(B");
@@ -279,17 +257,17 @@ public class VideoTerminal
             Console.Write($"\x1b[{row};{col}H");
 
             Console.Write("+");
-            Console.Write(new string('-', _maxCol - col - 2));
+            Console.Write(new string('-', this.MaxCol - col - 2));
             Console.Write("+");
-            Console.Write($"\x1b[{_maxRow - 1};{col}H");
+            Console.Write($"\x1b[{this.MaxRow - 1};{col}H");
             Console.Write("+");
-            Console.Write(new string('-', _maxCol - col - 2));
+            Console.Write(new string('-', this.MaxCol - col - 2));
             Console.Write("+");
 
-            for (int r = 2; r < _maxRow - 1; r++)
+            for (int r = 2; r < this.MaxRow - 1; r++)
             {
                 Console.Write($"\x1b[{r};{col}H|");
-                Console.Write($"\x1b[{r};{_maxCol}H|");
+                Console.Write($"\x1b[{r};{this.MaxCol}H|");
             }
         }
 
@@ -302,14 +280,14 @@ public class VideoTerminal
         {
             Console.Write($"\x1b(0");
 
-            for (int r = 2; r <= _maxRow - 2; r++)
+            for (int r = 2; r <= this.MaxRow - 2; r++)
             {
                 Console.Write($"\x1b[{r};{col}Hx");
             }
 
             Console.Write($"\x1b[{row};{col}H");
             Console.Write("w");
-            Console.Write($"\x1b[{_maxRow - 1};{col}H");
+            Console.Write($"\x1b[{this.MaxRow - 1};{col}H");
             Console.Write("v");
 
             Console.Write($"\x1b[H\x1b(B");
@@ -319,10 +297,10 @@ public class VideoTerminal
             Console.Write($"\x1b[{row};{col}H");
 
             Console.Write("+");
-            Console.Write($"\x1b[{_maxRow - 1};{col}H");
+            Console.Write($"\x1b[{this.MaxRow - 1};{col}H");
             Console.Write("+");
 
-            for (int r = 2; r < _maxRow - 2; r++)
+            for (int r = 2; r < this.MaxRow - 2; r++)
             {
                 Console.Write($"\x1b[{r};{col}H|");
             }
@@ -337,14 +315,14 @@ public class VideoTerminal
         {
             Console.Write($"\x1b(0");
 
-            for (int c = 2; c <= _maxCol - 1; c++)
+            for (int c = 2; c <= this.MaxCol - 1; c++)
             {
                 Console.Write($"\x1b[{row};{c}Hq");
             }
 
             Console.Write($"\x1b[{row};{col}H");
             Console.Write("t");
-            Console.Write($"\x1b[{row};{_maxCol}H");
+            Console.Write($"\x1b[{row};{this.MaxCol}H");
             Console.Write("u");
 
             Console.Write($"\x1b[H\x1b(B");
@@ -354,10 +332,10 @@ public class VideoTerminal
             Console.Write($"\x1b[{row};{col}H");
 
             Console.Write("+");
-            Console.Write($"\x1b[{row};{_maxCol - 1}H");
+            Console.Write($"\x1b[{row};{this.MaxCol - 1}H");
             Console.Write("+");
 
-            for (int c = 2; c < _maxCol - 1; c++)
+            for (int c = 2; c < this.MaxCol - 1; c++)
             {
                 Console.Write($"\x1b[{row};{c}H-");
             }
@@ -479,6 +457,24 @@ public class VideoTerminal
             Console.Write($"\x1b[21m");
         }
     }
-    
+
+    #region
+    private bool _disposed;
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        // Clean Up
+        CursorOn();
+        UsePrimaryBuffer();
+        // ResetAttributes();
+
+        _disposed = true;
+    }
+    #endregion
 }    
 
