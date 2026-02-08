@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-07    0.0.0.10    primary/secondary screen buffer bug fixing
     2026-02-07    0.0.0.9     primary/secondary screen buffer
     2026-02-07    0.0.0.8     code cleanup after AI consultation
     2026-02-07    0.0.0.7     addes some features from existing code
@@ -62,12 +63,11 @@ public class VideoTerminal
     public VideoTerminal()
     {
         this.SetColor(_defaultColorForeGround, _defaultColorBackGround);
-        this.ClearHome();
         _maxRow = Console.WindowHeight;
         _maxCol = Console.WindowWidth;
     }
 
-    public void UseSecondoryBuffer()
+    public void UseSecondaryBuffer()
     {
         Console.Write("\x1b[?1049h");
     }
@@ -77,12 +77,17 @@ public class VideoTerminal
         Console.Write("\x1b[?1049l");
     }
 
-    /*
-    public void Clear()
+    public void CursorOff()
     {
-        // Clear screen + cursor home
-        WriteRaw("\x1b[2J\x1b[H");
+        Console.Write("\x1b[?25l");
     }
+
+    public void CursorOn()
+    {
+        Console.Write("\x1b[?25h");
+    }
+
+    /*
 
     public void GotoXY(int row, int col)
     {
