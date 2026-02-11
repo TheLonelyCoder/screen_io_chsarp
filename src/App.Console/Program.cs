@@ -10,7 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
-    2026-02-11    0.0.1.8     Added empty new test ("Menue Tests" like the clipper "prompt/menue to")
+    2026-02-11    0.0.1.8     Added empty new test ("Menue Tests" like the Clipper© "prompt/menue to")
     2026-02-11    0.0.1.7     Code structure 
     2026-02-08    0.0.0.6     "Ctrl-C" Cleanup activated
     2026-02-08    0.0.0.5     Cursor ON / OFF testing

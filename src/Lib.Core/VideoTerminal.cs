@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-11    0.0.1.13    Added "prompt/menue" functionality into lib (inspired by Clipper©)
     2026-02-08    0.0.0.12    code cleanup 
     2026-02-08    0.0.0.11    code cleanup
     2026-02-08    0.0.0.10    primary/secondary screen buffer bug fixing
@@ -98,7 +99,7 @@ public class VideoTerminal : IDisposable
 
         WriteRaw($"\x1b[{row};{col}H");
     }
-
+    
     public void SetColor(TerminalColors foreGround, TerminalColors backGround)
     {
         _currentForeGround = foreGround;
@@ -126,6 +127,20 @@ public class VideoTerminal : IDisposable
         Write(text);
     }
     */
+    
+    public void SetColor(ItemColor color)
+    {
+        /*
+        _currentForeGround = color.ForeGround;
+        _currentBackGround = color.BackGround;
+        */
+
+        int fg = 30 + (int)color.ForeGround;
+        int bg = 40 + (int)color.BackGround;
+
+        Console.Write($"\x1b[{fg};{bg}m");
+    }
+    
 
     public void Write(int row, int col, string text)
     {
@@ -142,7 +157,7 @@ public class VideoTerminal : IDisposable
 
     public int MaxRow => Console.WindowHeight;
     public int MaxCol => Console.WindowWidth;
-  
+
     public void ClearScreen(int mode = 2)
     {
         Console.Write($"\x1b[{mode}J");
@@ -351,15 +366,15 @@ public class VideoTerminal : IDisposable
         Console.Write($"\x1b[{_row};{_col}H");
     }
 
-        public ConsoleKeyInfo WaitMessage(int row, int col, string text)
+    public ConsoleKeyInfo WaitMessage(int row, int col, string text)
     {
         _col = col;
-        _row = row;         
+        _row = row;
         Console.Write($"\x1b[{_row};{_col}H{text}");
         return Console.ReadKey();
     }
 
-    public int CursorUp()    
+    public int CursorUp()
     {
         if (_row > 1)
         {
@@ -377,7 +392,7 @@ public class VideoTerminal : IDisposable
         return _row;
     }
 
-    public int CursorLeft()    
+    public int CursorLeft()
     {
         if (_col > 1)
         {
@@ -472,5 +487,222 @@ public class VideoTerminal : IDisposable
         _disposed = true;
     }
     #endregion
+    
+    public int ShowMenue(Menue menue)
+    {
+        int c = 0;
+
+        if (menue.LastSelectedItem > -1)
+        {
+            menue.CurrentItem = menue.LastSelectedItem;
+        }
+
+        foreach (MenueItem mi in menue.Items)
+        {
+            if (c == menue.CurrentItem)
+            {
+                if (mi.UseItemColors)
+                {
+                    this.SetColor(mi.ColorSelected);
+                }
+                else if (menue.UseMenueColors)
+                {
+                    this.SetColor(menue.ColorSelected);
+                }
+                else
+                {
+                    // invert current colors
+                    this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+                }
+            }
+            else 
+            {
+                if (mi.UseItemColors)
+                {
+                    this.SetColor(mi.Color);
+                }
+                else if (menue.UseMenueColors)
+                {
+                    this.SetColor(menue.Color);
+                }
+                else
+                {
+                    this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+                }
+            }
+            this.Write(mi.Row, mi.Col, mi.Value);
+            this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+
+            c++;
+        }
+
+        return menue.CurrentItem;
+    }
+
+    public int ReadMenue(Menue menue)
+    {
+        // this.ShowMenue(menue);
+        int result = -1;
+
+        ConsoleKeyInfo pressedKey;
+        while (true)
+        {
+            pressedKey = Console.ReadKey();
+            if (pressedKey.Key == ConsoleKey.Enter)
+            {
+                result = menue.CurrentItem;
+                menue.LastSelectedItem = menue.CurrentItem;
+                break;
+            }
+            else if (pressedKey.Key == ConsoleKey.Escape)
+            {
+                break;
+            }
+            else if (pressedKey.Key == ConsoleKey.Home)
+            {
+                menue.CurrentItem = 0;
+                this.ShowMenue(menue);
+            }            
+            else if (pressedKey.Key == ConsoleKey.End)
+            {
+                menue.CurrentItem = menue.Items.Count - 1;
+                this.ShowMenue(menue);
+            }
+            else if (pressedKey.Key == ConsoleKey.UpArrow)
+            {
+                menue.LastSelectedItem = -1;
+                menue.CurrentItem = menue.CurrentItem - 1;
+                if (menue.CurrentItem < 0)
+                {
+                    menue.CurrentItem = menue.Items.Count - 1;
+                }
+                this.ShowMenue(menue);
+            }            
+            else if (pressedKey.Key == ConsoleKey.DownArrow)
+            {
+                menue.LastSelectedItem = -1;
+                menue.CurrentItem = menue.CurrentItem + 1;
+                if (menue.CurrentItem >= menue.Items.Count)
+                {
+                    menue.CurrentItem = 0;
+                }
+                this.ShowMenue(menue);
+            }            
+        }
+
+        return result;
+    }    
 }    
 
+public class MenueItem
+{
+    public int Col { get; set; }
+    public int Row { get; set; }
+    public string Value { get; set; }
+    public ItemColor Color { get; set; }
+    public ItemColor ColorSelected { get; set; }
+    public bool UseItemColors { get; set; }
+    public string Cargo { get; set; }
+
+    public MenueItem(int row, int col, string value)
+    {
+        this.Row = row;
+        this.Col = col;
+        this.Value = value;
+        this.Cargo = String.Empty;
+        this.UseItemColors = false;
+    }
+
+    public MenueItem(int row, int col, string value, string cargo)
+    {
+        this.Row = row;
+        this.Col = col;
+        this.Value = value;
+        this.Cargo = cargo;
+        this.UseItemColors = false;
+    }
+
+    public MenueItem(int row, int col, string value, ItemColor colorValue, ItemColor colorValueSelected)
+    {
+        this.Row = row;
+        this.Col = col;
+        this.Value = value;
+        this.Cargo = String.Empty;
+        this.Color = colorValue;
+        this.ColorSelected = colorValueSelected;
+        this.UseItemColors = true;
+    }    
+
+    public MenueItem(int row, int col, string value, string cargo, ItemColor colorValue, ItemColor colorValueSelected)
+    {
+        this.Row = row;
+        this.Col = col;
+        this.Value = value;
+        this.Cargo = cargo;
+        this.Color = colorValue;
+        this.ColorSelected = colorValueSelected;
+        this.UseItemColors = true;
+    } 
+}
+
+public class Menue
+{
+    public List<MenueItem> Items { get; set; }
+    public int CurrentItem { get; set; }
+    public ItemColor Color { get; set; }
+    public ItemColor ColorSelected { get; set; }
+    public bool UseMenueColors { get; set; }
+    public int LastSelectedItem { get; set; }
+
+    public Menue()
+    {
+        this.Items = new List<MenueItem>();
+        this.CurrentItem = 0;
+        this.UseMenueColors = false;
+    }
+
+    public Menue(int startWithSelectItem)
+    {
+        this.Items = new List<MenueItem>();
+        this.CurrentItem = 0;
+        this.LastSelectedItem = startWithSelectItem;
+        this.UseMenueColors = false;
+    }
+
+    public Menue(ItemColor color, ItemColor colorSelected)
+    {
+        this.Items = new List<MenueItem>();
+        CurrentItem = 0;
+        this.Color = color;
+        this.ColorSelected = colorSelected;
+        this.UseMenueColors = true;
+    }
+
+    public Menue(List<MenueItem> items)
+    {
+        this.Items = items;
+        CurrentItem = 0;
+        this.UseMenueColors = false;
+    }
+
+    public Menue(List<MenueItem> items, ItemColor color, ItemColor colorSelected)
+    {
+        this.Items = items;
+        CurrentItem = 0;
+        this.Color = color;
+        this.ColorSelected = colorSelected;
+        this.UseMenueColors = true;
+    }    
+}
+
+public class ItemColor
+{
+    public TerminalColors ForeGround { get; set; }
+    public TerminalColors BackGround { get; set; }
+
+    public ItemColor(TerminalColors foreGround, TerminalColors backGround)
+    {
+        this.ForeGround = foreGround;
+        this.BackGround = backGround;
+    }
+}
