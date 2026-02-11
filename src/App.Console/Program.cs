@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-11    0.0.1.8     Added empty new test ("Menue Tests" like the clipper "prompt/menue to")
     2026-02-11    0.0.1.7     Code structure 
     2026-02-08    0.0.0.6     "Ctrl-C" Cleanup activated
     2026-02-08    0.0.0.5     Cursor ON / OFF testing
@@ -33,22 +34,38 @@ using (var _vt = new VideoTerminal())
 {
     AppDomain.CurrentDomain.ProcessExit += (_, __) => _vt.Dispose();
     Console.CancelKeyPress += (_, __) => _vt.Dispose();
+
+    _vt.CursorOff();
+    _vt.UseSecondaryBuffer();
+
     RunBasicTest(_vt, _appVer, _libVer);
+
+    RunBasicMenueTest(_vt, _appVer, _libVer);
+    
+    _vt.UsePrimaryBuffer();
+    _vt.CursorOn();
+
 }
 
 
 void RunBasicTest(VideoTerminal vt, string appVer, string libVer)
 {
-    vt.CursorOff();
-    vt.UseSecondaryBuffer();
-    vt.ClearScreen();
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);
+    vt.ClearScreen();
     vt.Box();
-    vt.Write( 2, 10, "Programm Version " + appVer);
-    vt.Write( 3, 10, "VideoTerminal Version " + libVer);
-    vt.Write( 5,  5, "ANSI Terminal ready for more code!");
+    vt.Write(2, 10, "Programm Version " + appVer);
+    vt.Write(3, 10, "VideoTerminal Version " + libVer);
+    vt.Write(5, 5, "Are you ready for more Tests?");
+    vt.Write(9, 5, "Press any key... (or ^C for abort)");
+    Console.ReadKey(true);
+}
+
+void RunBasicMenueTest(VideoTerminal vt, string appVer, string libVer)
+{
+    vt.SetColor(TerminalColors.Green, TerminalColors.Black);
+    vt.ClearScreen();
+    vt.Box();
+    vt.Write(2, 10, "Program & Library Version: " + appVer + " / " + libVer);
     vt.Write( 9,  5, "Press any key...");
     Console.ReadKey(true);
-    vt.UsePrimaryBuffer();
-    vt.CursorOn();
 }
