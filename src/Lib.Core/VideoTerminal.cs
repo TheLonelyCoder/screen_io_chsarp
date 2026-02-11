@@ -11,6 +11,8 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-11    0.0.1.16    Bugfix (ReadKey echo)
+    2026-02-11    0.0.1.15    Bugfix (to many "state" vars)
     2026-02-11    0.0.1.14    Bugfix (SetColor with ItemColor)
     2026-02-11    0.0.1.13    Added "prompt/menue" functionality into lib (inspired by Clipper©)
     2026-02-08    0.0.0.12    code cleanup 
@@ -538,7 +540,7 @@ public class VideoTerminal : IDisposable
         ConsoleKeyInfo pressedKey;
         while (true)
         {
-            pressedKey = Console.ReadKey();
+            pressedKey = Console.ReadKey(true);
             if (pressedKey.Key == ConsoleKey.Enter)
             {
                 result = menue.CurrentItem;
