@@ -70,7 +70,6 @@ void RunBasicMenueTest(VideoTerminal vt, string appVer, string libVer)
     vt.Write(2, 10, "Program & Library Version: " + appVer + " / " + libVer);
 
     Menue m = new Menue(new ItemColor(TerminalColors.Yellow, TerminalColors.Black), new ItemColor(TerminalColors.Black, TerminalColors.Red));
-    // Menue m = new(); < this should use default values ... but I do not find the reason (I assume something iwht my "currentItem")
     m.Items.Add(new MenueItem(5, 10, "Test Menue Item 1"));
     m.Items.Add(new MenueItem(7, 10, "Test Menue Item 2"));
     m.Items.Add(new MenueItem(9, 10, "Test Menue Item 3"));
@@ -79,5 +78,22 @@ void RunBasicMenueTest(VideoTerminal vt, string appVer, string libVer)
     int result = vt.ReadMenue(m); 
 
     vt.Write(14, 5, "you selected item # " + result.ToString());
+    Console.ReadKey(true);
+
+    // Second run
+    vt.ClearScreen();
+    vt.Box();
+    
+    m = new();
+    m.Items.Add(new MenueItem(5, 10, "Test Menue Item 1"));
+    m.Items.Add(new MenueItem(7, 10, "Test Menue Item 2"));
+    m.Items.Add(new MenueItem(9, 10, "Test Menue Item 3"));
+    m.Items.Add(new MenueItem(11, 10, "Test Menue Item 4"));
+    vt.ShowMenue(m);
+    result = vt.ReadMenue(m); 
+
+    vt.Write(14, 5, "you selected item # " + result.ToString());
+    
+    
     Console.ReadKey(true);
 }

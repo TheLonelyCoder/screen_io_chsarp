@@ -61,8 +61,6 @@ public class VideoTerminal : IDisposable
     TerminalColors _defaultColorBackGround = TerminalColors.Black;
     TerminalColors _currentColorForeGround = TerminalColors.Green;
     TerminalColors _currentColorBackGround = TerminalColors.Black;
-    TerminalColors _currentForeGround = TerminalColors.Green;
-    TerminalColors _currentBackGround = TerminalColors.Black;
 
     public VideoTerminal()
     {
@@ -446,13 +444,7 @@ public class VideoTerminal : IDisposable
 
     public void SetColor(ItemColor color)
     {
-        _currentForeGround = color.ForeGround;
-        _currentBackGround = color.BackGround;
-
-        int fg = 30 + (int)color.ForeGround;
-        int bg = 40 + (int)color.BackGround;
-
-        Console.Write($"\x1b[{fg};{bg}m");
+        SetColor(color.ForeGround, color.BackGround);
     }
 
     public void SetBold(bool bold = true)
@@ -488,6 +480,9 @@ public class VideoTerminal : IDisposable
     
     public int ShowMenue(Menue menue)
     {
+        TerminalColors baseFg = _currentColorForeGround;
+        TerminalColors baseBg = _currentColorBackGround;
+    
         int c = 0;
 
         if (menue.LastSelectedItem > -1)
@@ -509,8 +504,7 @@ public class VideoTerminal : IDisposable
                 }
                 else
                 {
-                    // invert current colors
-                    this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+                    this.SetColor(baseBg, baseFg);
                 }
             }
             else 
@@ -525,12 +519,11 @@ public class VideoTerminal : IDisposable
                 }
                 else
                 {
-                    this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+                    this.SetColor(baseFg, baseBg);
                 }
             }
             this.Write(mi.Row, mi.Col, mi.Value);
-            this.SetColor(_currentColorForeGround, _currentColorBackGround); 
-
+            this.SetColor(baseFg, baseBg);
             c++;
         }
 
