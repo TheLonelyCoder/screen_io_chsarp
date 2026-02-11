@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-11    0.0.1.14    Bugfix (SetColor with ItemColor)
     2026-02-11    0.0.1.13    Added "prompt/menue" functionality into lib (inspired by Clipper©)
     2026-02-08    0.0.0.12    code cleanup 
     2026-02-08    0.0.0.11    code cleanup
@@ -128,20 +129,6 @@ public class VideoTerminal : IDisposable
     }
     */
     
-    public void SetColor(ItemColor color)
-    {
-        /*
-        _currentForeGround = color.ForeGround;
-        _currentBackGround = color.BackGround;
-        */
-
-        int fg = 30 + (int)color.ForeGround;
-        int bg = 40 + (int)color.BackGround;
-
-        Console.Write($"\x1b[{fg};{bg}m");
-    }
-    
-
     public void Write(int row, int col, string text)
     {
         _col = col;
@@ -455,6 +442,17 @@ public class VideoTerminal : IDisposable
         _currentColorBackGround = backGround;
 
         Console.Write($"\x1b[{(int)TerminalColorsArea.ForeGround + (int)foreGround}m\x1b[{(int)TerminalColorsArea.BackGround + (int)backGround}m");
+    }
+
+    public void SetColor(ItemColor color)
+    {
+        _currentForeGround = color.ForeGround;
+        _currentBackGround = color.BackGround;
+
+        int fg = 30 + (int)color.ForeGround;
+        int bg = 40 + (int)color.BackGround;
+
+        Console.Write($"\x1b[{fg};{bg}m");
     }
 
     public void SetBold(bool bold = true)

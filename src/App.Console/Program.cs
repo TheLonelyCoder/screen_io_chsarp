@@ -10,6 +10,8 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-11    0.0.1.10    more test for prompt/menue
+    2026-02-11    0.0.1.9     prompt/menue tests
     2026-02-11    0.0.1.8     Added empty new test ("Menue Tests" like the Clipper© "prompt/menue to")
     2026-02-11    0.0.1.7     Code structure 
     2026-02-08    0.0.0.6     "Ctrl-C" Cleanup activated
@@ -66,6 +68,16 @@ void RunBasicMenueTest(VideoTerminal vt, string appVer, string libVer)
     vt.ClearScreen();
     vt.Box();
     vt.Write(2, 10, "Program & Library Version: " + appVer + " / " + libVer);
-    vt.Write( 9,  5, "Press any key...");
+
+    Menue m = new Menue(new ItemColor(TerminalColors.Yellow, TerminalColors.Black), new ItemColor(TerminalColors.Black, TerminalColors.Red));
+    // Menue m = new(); < this should use default values ... but I do not find the reason (I assume something iwht my "currentItem")
+    m.Items.Add(new MenueItem(5, 10, "Test Menue Item 1"));
+    m.Items.Add(new MenueItem(7, 10, "Test Menue Item 2"));
+    m.Items.Add(new MenueItem(9, 10, "Test Menue Item 3"));
+    m.Items.Add(new MenueItem(11, 10, "Test Menue Item 4"));
+    vt.ShowMenue(m);
+    int result = vt.ReadMenue(m); 
+
+    vt.Write(14, 5, "you selected item # " + result.ToString());
     Console.ReadKey(true);
 }
