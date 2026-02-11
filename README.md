@@ -1,3 +1,8 @@
-[b] VideoTerminal Screen I/O [b]
+VideoTerminal Screen I/O
 
-Inspired by Clipper (c) '@ say/get - read'
+
+Inspired by Clipper (c) 
+* '@ say/get - read'
+* '@ prompt - menue to'
+* 'dbedit()'
+* 
