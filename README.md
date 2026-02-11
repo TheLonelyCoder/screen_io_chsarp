@@ -5,4 +5,5 @@ Inspired by Clipper (c)
 * '@ say/get - read'
 * '@ prompt - menue to'
 * 'dbedit()'
-* 
+ 
+
