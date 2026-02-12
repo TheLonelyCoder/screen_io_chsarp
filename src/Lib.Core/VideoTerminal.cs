@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-12    0.1.0.18    Added 'ScreenItem' Class
     2026-02-12    0.1.0.17    Bugfix with version number (mixed up 'bugfix' with 'feature' Major.Minor.Error.Build
     2026-02-11    0.0.1.16    Bugfix (ReadKey echo)
     2026-02-11    0.0.1.15    Bugfix (to many "state" vars)
@@ -698,5 +699,49 @@ public class ItemColor
     {
         this.ForeGround = foreGround;
         this.BackGround = backGround;
+    }
+}
+
+public class ScreenItem
+{
+    public string ID { get; set; }
+    public int Col { get; set; }
+    public int Row { get; set; }
+    public string Value { get; set; }
+    public ItemColor Color { get; set; }
+    public ItemColor ColorSelected { get; set; }
+    public bool UseItemColors { get; set; }
+    public string Cargo { get; set; }
+    public bool IsNumeric { get; set; }
+    public bool IsEditable { get; set; }
+    public int Length { get; set; }
+    public string Message { get; set; }
+    public string PasswordChar { get; set; }
+    public string UndoValue { get; set; }
+
+    public ScreenItem(int row, int col, string value, int length, string id = "", string cargo = "", string passwordChar = "")
+    {
+        this.ID = id;
+        this.Row = row;
+        this.Col = col;
+        this.Value = value;
+        this.Length = length;
+        this.IsEditable = true;
+        this.Cargo = cargo; 
+        this.PasswordChar = passwordChar;
+        this.UndoValue = value;
+    }
+
+    public ScreenItem(int row, int col, string value)
+    {
+        this.ID = value;                // same as display text
+        this.Row = row;
+        this.Col = col;
+        this.Value = value;
+        this.Length = -1;
+        this.IsEditable = false;
+        this.Cargo = value;             // same as display text
+        this.PasswordChar = "";
+        this.UndoValue = value; ;       // no deep thoughts about that shit
     }
 }
