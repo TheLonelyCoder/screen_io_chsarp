@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-12    0.2.0.20    'EditTextAt' without Password char (optional now)
     2026-02-12    0.2.0.19    Added 'EditTextAt' method to 'VideoTerminal'
     2026-02-12    0.1.0.18    Added 'ScreenItem' Class
     2026-02-12    0.1.0.17    Bugfix with version number (mixed up 'bugfix' with 'feature' Major.Minor.Error.Build
@@ -589,7 +590,7 @@ public class VideoTerminal : IDisposable
         return result;
     }
 
-    public ConsoleKeyInfo EditTextAt(int row, int col, ref string text, int length, string passwordChar)
+    public ConsoleKeyInfo EditTextAt(int row, int col, ref string text, int length, string passwordChar = "")
     {
         string originalText = text;
         ConsoleKeyInfo result = new ConsoleKeyInfo();

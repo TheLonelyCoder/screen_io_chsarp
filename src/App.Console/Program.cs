@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-12    0.2.0.14    Text 'EditTextAt' (withount passwordchar)
     2026-02-12    0.2.0.13    Text 'EditTextAt' (with passwordchar) - improved
     2026-02-12    0.2.0.12    Text 'EditTextAt' (with passwordchar)
     2026-02-12    0.1.0.11    Bugfix with version number (mixed up 'bugfix' with 'feature' Major.Minor.Error.Build
@@ -63,7 +64,7 @@ void RunEditTextAtTest(VideoTerminal vt)
     vt.ClearScreen();
     string mytext = "versuch 1";
     vt.CursorOn();
-    ConsoleKeyInfo cki = vt.EditTextAt(10, 10, ref mytext, 22, "*");
+    ConsoleKeyInfo cki = vt.EditTextAt(10, 10, ref mytext, 22);
     vt.CursorOff();
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);
     vt.WaitMessage(12, 10, "you entered: " + mytext);
