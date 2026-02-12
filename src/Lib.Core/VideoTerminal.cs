@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-12    0.2.0.19    Added 'EditTextAt' method to 'VideoTerminal'
     2026-02-12    0.1.0.18    Added 'ScreenItem' Class
     2026-02-12    0.1.0.17    Bugfix with version number (mixed up 'bugfix' with 'feature' Major.Minor.Error.Build
     2026-02-11    0.0.1.16    Bugfix (ReadKey echo)
@@ -130,7 +131,7 @@ public class VideoTerminal : IDisposable
         Write(text);
     }
     */
-    
+
     public void Write(int row, int col, string text)
     {
         _col = col;
@@ -481,12 +482,12 @@ public class VideoTerminal : IDisposable
         _disposed = true;
     }
     #endregion
-    
+
     public int ShowMenue(Menue menue)
     {
         TerminalColors baseFg = _currentColorForeGround;
         TerminalColors baseBg = _currentColorBackGround;
-    
+
         int c = 0;
 
         if (menue.LastSelectedItem > -1)
@@ -511,7 +512,7 @@ public class VideoTerminal : IDisposable
                     this.SetColor(baseBg, baseFg);
                 }
             }
-            else 
+            else
             {
                 if (mi.UseItemColors)
                 {
@@ -557,7 +558,7 @@ public class VideoTerminal : IDisposable
             {
                 menue.CurrentItem = 0;
                 this.ShowMenue(menue);
-            }            
+            }
             else if (pressedKey.Key == ConsoleKey.End)
             {
                 menue.CurrentItem = menue.Items.Count - 1;
@@ -572,7 +573,7 @@ public class VideoTerminal : IDisposable
                     menue.CurrentItem = menue.Items.Count - 1;
                 }
                 this.ShowMenue(menue);
-            }            
+            }
             else if (pressedKey.Key == ConsoleKey.DownArrow)
             {
                 menue.LastSelectedItem = -1;
@@ -582,11 +583,180 @@ public class VideoTerminal : IDisposable
                     menue.CurrentItem = 0;
                 }
                 this.ShowMenue(menue);
-            }            
+            }
         }
 
         return result;
-    }    
+    }
+
+    public ConsoleKeyInfo EditTextAt(int row, int col, ref string text, int length, string passwordChar)
+    {
+        string originalText = text;
+        ConsoleKeyInfo result = new ConsoleKeyInfo();
+        string editBuffer = text.PadRight(length);
+        bool IsInsertMode = false;
+
+        this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+        this.Position(row, col);
+
+        while (true)
+        {
+            int backupRow = _row;
+            int backupCol = _col;
+                
+            if (String.IsNullOrEmpty(passwordChar)) 
+            {
+            this.Write(row, col, editBuffer);
+            }
+            else
+            {
+                // TODO: fix 'visible spaces in passwords' bug
+                text = editBuffer.TrimEnd();
+                this.Write(row, col, (new string(passwordChar[0], text.Length)).PadRight(length));
+            }
+
+            // this.Write(11, 85, "Wert '_col' : " + backupCol.ToString());
+            // this.Write(12, 85, "Wert 'col'  : " + col.ToString());
+            // this.Write(13, 85, "Wert 'idx'  : " + (backupCol - col).ToString());
+            // this.Write(14, 85, "Textwert ...: " + editBuffer);
+            
+            this.Position(backupRow, backupCol);
+
+            result = Console.ReadKey(true);
+
+            if (result.Key == ConsoleKey.Enter)
+            {
+                break;
+            }
+            else if (result.Modifiers == ConsoleModifiers.Control) 
+            {
+                if (result.Key == ConsoleKey.S)
+                {
+                    break; 
+                }
+            }
+            else if (result.Key == ConsoleKey.Escape)
+            {
+                text = originalText;
+                break;
+            }
+            else if (result.Key == ConsoleKey.UpArrow)
+            {
+                break;
+            }            
+            else if (result.Key == ConsoleKey.Tab)
+            {
+                break;
+            }            
+            else if (result.Key == ConsoleKey.DownArrow)
+            {
+                break;
+            }         
+            else if (result.Key == ConsoleKey.RightArrow)
+            {
+                if (_col < (col + length) - 1)
+                {
+                    this.Position(row, _col + 1);
+                }
+            }   
+            else if (result.Key == ConsoleKey.LeftArrow)
+            {
+                if (_col > col)
+                {
+                    this.Position(row, _col - 1);
+                }
+            }   
+            else if (result.Key == ConsoleKey.Home)
+            {
+                this.Position(row, col);
+            }              
+            else if (result.Key == ConsoleKey.End)
+            {
+                this.Position(row, col + length - 1);
+            }              
+            else if (result.Key == ConsoleKey.Insert)
+            {
+                IsInsertMode = !IsInsertMode;
+            }              
+            else if (result.Key == ConsoleKey.Backspace)
+            {
+                int pos = (backupCol - col);
+
+                if (pos > 0)
+                {
+                    editBuffer = editBuffer.Substring(0, pos - 1) + editBuffer.Substring(pos);
+                    editBuffer = editBuffer.PadRight(length);
+                    this.Position(row, _col - 1);
+                }
+            }              
+            else if (result.Key == ConsoleKey.Delete)
+            {
+                int pos = (backupCol - col);
+
+                if (pos < length)
+                {
+                    editBuffer = editBuffer.Substring(0, pos) + editBuffer.Substring(pos + 1);
+                    editBuffer = editBuffer.PadRight(length);
+                }
+            }              
+            else
+            {
+                backupRow = _row;
+                backupCol = _col;
+
+                char charInput = result.KeyChar;
+
+                // this.Write(15, 85, "Textwert ...: " + editBuffer);
+                // this.Write(15, 85, "Pressed Key : " + charInput);
+
+                this.Position(backupRow, backupCol);
+
+                int pos = (backupCol - col);
+
+                if (IsInsertMode)
+                {
+                    if (pos == 0)
+                    {
+                        editBuffer = charInput + editBuffer;
+                        editBuffer = editBuffer.Substring(0, length);
+                    }
+                    else
+                    {
+                        editBuffer = editBuffer.Substring(0, pos) + charInput + editBuffer.Substring(pos);
+                        editBuffer = editBuffer.Substring(0, length);
+                    }
+                }
+                else
+                {
+                    char[] edit = editBuffer.ToCharArray(0, length);
+                    edit[pos] = charInput;
+                    editBuffer = new string(edit);
+
+                }
+
+                if (_col < (col + length) - 1)
+                {
+                    this.Position(row, _col + 1);
+                }
+            }
+        }
+
+        text = editBuffer.TrimEnd();
+
+        this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+
+        if (String.IsNullOrEmpty(passwordChar)) 
+        {
+            this.Write(row, col, editBuffer);
+        }
+        else
+        {
+            this.Write(row, col, (new string(passwordChar[0], text.Length)).PadRight(length));
+        }
+
+        return result;
+    }
+
 }    
 
 public class MenueItem
