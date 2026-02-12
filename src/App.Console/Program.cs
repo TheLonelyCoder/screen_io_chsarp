@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-12    0.2.0.13    Text 'EditTextAt' (with passwordchar) - improved
     2026-02-12    0.2.0.12    Text 'EditTextAt' (with passwordchar)
     2026-02-12    0.1.0.11    Bugfix with version number (mixed up 'bugfix' with 'feature' Major.Minor.Error.Build
     2026-02-11    0.0.1.10    more test for prompt/menue
@@ -44,18 +45,29 @@ using (var _vt = new VideoTerminal())
 
     RunBasicTest(_vt, _appVer, _libVer);
 
-    RunBasicMenueTest(_vt, _appVer, _libVer);
+    // RunBasicMenueTest(_vt, _appVer, _libVer);
 
-    _vt.ClearScreen();
-    string mytext = "versuch 1";
-    _vt.CursorOn();
-    ConsoleKeyInfo cki = _vt.EditTextAt(10, 10, ref mytext, 22, "*");
-    _vt.WaitMessage(12, 10, "you entered: " + mytext);
+    RunEditTextAtTest(_vt);
     
     _vt.UsePrimaryBuffer();
     _vt.CursorOn();
 }
 
+
+void RunEditTextAtTest(VideoTerminal vt)
+{
+    vt.SetColor(TerminalColors.Green, TerminalColors.Black);
+    vt.ClearScreen();
+    vt.Box();
+
+    vt.ClearScreen();
+    string mytext = "versuch 1";
+    vt.CursorOn();
+    ConsoleKeyInfo cki = vt.EditTextAt(10, 10, ref mytext, 22, "*");
+    vt.CursorOff();
+    vt.SetColor(TerminalColors.Green, TerminalColors.Black);
+    vt.WaitMessage(12, 10, "you entered: " + mytext);
+}
 
 void RunBasicTest(VideoTerminal vt, string appVer, string libVer)
 {
