@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-12    0.1.0.11    Bugfix with version number (mixed up 'bugfix' with 'feature' Major.Minor.Error.Build
     2026-02-11    0.0.1.10    more test for prompt/menue
     2026-02-11    0.0.1.9     prompt/menue tests
     2026-02-11    0.0.1.8     Added empty new test ("Menue Tests" like the Clipper© "prompt/menue to")
@@ -46,7 +47,6 @@ using (var _vt = new VideoTerminal())
     
     _vt.UsePrimaryBuffer();
     _vt.CursorOn();
-
 }
 
 

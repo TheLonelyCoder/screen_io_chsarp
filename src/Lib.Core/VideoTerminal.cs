@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-12    0.1.0.17    Bugfix with version number (mixed up 'bugfix' with 'feature' Major.Minor.Error.Build
     2026-02-11    0.0.1.16    Bugfix (ReadKey echo)
     2026-02-11    0.0.1.15    Bugfix (to many "state" vars)
     2026-02-11    0.0.1.14    Bugfix (SetColor with ItemColor)
