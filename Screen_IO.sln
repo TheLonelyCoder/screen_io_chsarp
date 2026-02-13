@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
+# Visual Studio Version 17 
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F1C59B03-AAA1-4173-92F8-3C6F0177DB3C}"
@@ -32,3 +32,4 @@ Global
 		{A3730DA9-13BB-4001-9399-3CCC46DC2C75} = {F1C59B03-AAA1-4173-92F8-3C6F0177DB3C}
 	EndGlobalSection
 EndGlobal
+
