@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.2.27    'ReadScreen' Arrow Keys now working correct, Tab & Shift-Tab too
     2026-02-13    0.3.1.26    'ReadScreen' color quirks
     2026-02-13    0.3.1.25    'ReadScreen' added
     2026-02-13    0.3.1.24    change 'ShowScreen' => moved into new class 'EditScreen'
@@ -1055,21 +1056,32 @@ public class EditScreen
                 // handle results or whatever is needed
 
                 // depending on the result ...
-                currentItem++;
-                if (currentItem == editItems.Count)
+                if (cki.Key == ConsoleKey.UpArrow || (cki.Key == ConsoleKey.Tab && cki.Modifiers == ConsoleModifiers.Shift))
                 {
-                    // depending on "roll over" or "quit" (actually we quit)
-                    // but not on testing ....
-                    // break;
-                    if (exitOnEnter && cki.Key == ConsoleKey.Enter)
+                    currentItem--;
+                    if (currentItem < 0)
                     {
-                        break;
-                    }
-                    else
-                    {
-                        currentItem = 0;
+                        currentItem = editItems.Count - 1;
                     }
                 }
+                else
+                {
+                    currentItem++;
+                }
+                if (currentItem == editItems.Count)
+                    {
+                        // depending on "roll over" or "quit" (actually we quit)
+                        // but not on testing ....
+                        // break;
+                        if (exitOnEnter && cki.Key == ConsoleKey.Enter)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            currentItem = 0;
+                        }
+                    }
             }
         }
     }
