@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.1.17    change 'ShowScreen' => class 'EditScreen'
     2026-02-13    0.3.0.16    minor improvements
     2026-02-13    0.3.0.15    Test for 'ShowScreen' added
     2026-02-12    0.2.0.14    Text 'EditTextAt' (withount passwordchar)
@@ -77,7 +78,8 @@ void RunShowScreenTest(VideoTerminal vt)
     myScreen.Add(new ScreenItem(9, 5, "and again: "));
     myScreen.Add(new ScreenItem(9, 25, thirdelement, 30));
 
-    vt.ShowScreen(myScreen);
+    EditScreen myEditScreen = new EditScreen(vt);
+    myEditScreen.ShowScreen(myScreen);
 
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);
     vt.WaitMessage(12, 10, "press any key");

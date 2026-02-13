@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.1.17    change 'ShowScreen' => moved into new class 'EditScreen'
     2026-02-13    0.3.0.23    'ShowScreen' better solution for color quirsk
     2026-02-13    0.3.0.22    'ShowScreen' color quirks fixed
     2026-02-13    0.3.0.21    'ShowScreen' added
@@ -771,6 +772,7 @@ public class VideoTerminal : IDisposable
         return result;
     }
 
+    /*
     public void ShowScreen(List<ScreenItem> items)
     {
         foreach (ScreenItem item in items)
@@ -810,6 +812,7 @@ public class VideoTerminal : IDisposable
             }
         }
     }
+    */
 }    
 
 public class MenueItem
@@ -967,4 +970,55 @@ public class ScreenItem
         this.PasswordChar = "";
         this.UndoValue = value; ;       // no deep thoughts about that shit
     }
+}
+
+public class EditScreen
+{
+    VideoTerminal _vt = null;
+
+    public EditScreen(VideoTerminal vt)
+    {
+        _vt = vt;
+    }
+ 
+    public void ShowScreen(List<ScreenItem> items)
+    {
+        foreach (ScreenItem item in items)
+        {
+            if (!item.IsEditable)
+            {
+                // simple output
+                _vt.Write(item.Row, item.Col, item.Value);
+            }
+            else
+            {
+                // string dummyText = item.Value.PadRight(item.Length);
+                // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+                // this.Write(item.Row, item.Col, item.Value);
+                // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+
+                string dummyText = item.Value.PadRight(item.Length);
+                // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+                // this.SetBold();
+                // this.SwapColors();
+                _vt.ColorInverseOn();
+
+                if (String.IsNullOrEmpty(item.PasswordChar))
+                {
+                    // simple output
+                    _vt.Write(item.Row, item.Col, item.Value.PadRight(item.Length));
+                }
+                else
+                {
+                    _vt.Write(item.Row, item.Col, (new string(item.PasswordChar[0], item.Value.Length)).PadRight(item.Length));
+                }
+
+                // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+                // this.SetBold(false);
+                // this.SwapColors();
+                _vt.ColorInverseOff();
+            }
+        }
+    }
+    
 }
