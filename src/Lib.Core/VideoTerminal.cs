@@ -11,7 +11,9 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
-    2026-02-13    0.3.1.17    change 'ShowScreen' => moved into new class 'EditScreen'
+    2026-02-13    0.3.1.26    'ReadScreen' color quirks
+    2026-02-13    0.3.1.25    'ReadScreen' added
+    2026-02-13    0.3.1.24    change 'ShowScreen' => moved into new class 'EditScreen'
     2026-02-13    0.3.0.23    'ShowScreen' better solution for color quirsk
     2026-02-13    0.3.0.22    'ShowScreen' color quirks fixed
     2026-02-13    0.3.0.21    'ShowScreen' added
@@ -444,6 +446,11 @@ public class VideoTerminal : IDisposable
         Console.Write("\x1b[27m");
     }
 
+    /// <summary>
+    /// Set color AND change current settings
+    /// </summary>
+    /// <param name="foreGround"></param>
+    /// <param name="backGround"></param>
     public void SetColor(TerminalColors foreGround, TerminalColors backGround)
     {
         _currentColorForeGround = foreGround;
@@ -457,6 +464,16 @@ public class VideoTerminal : IDisposable
         SetColor(color.ForeGround, color.BackGround);
     }
 
+    /// <summary>
+    /// Set color BUT DOESNT TOCH current settings
+    /// </summary>
+    /// <param name="foreGround"></param>
+    /// <param name="backGround"></param>
+    public void ChangeColor(TerminalColors foreGround, TerminalColors backGround)
+    {
+        Console.Write($"\x1b[{(int)TerminalColorsArea.ForeGround + (int)foreGround}m\x1b[{(int)TerminalColorsArea.BackGround + (int)backGround}m");
+    }
+
     /*
     public void SwapColors()
     {
@@ -466,7 +483,7 @@ public class VideoTerminal : IDisposable
         Console.Write($"\x1b[{(int)TerminalColorsArea.ForeGround + (int)_currentColorForeGround}m\x1b[{(int)TerminalColorsArea.BackGround + (int)_currentColorBackGround}m");
     }
     */
-    
+
     public void SetBold(bool bold = true)
     {
         if (bold)
@@ -611,7 +628,8 @@ public class VideoTerminal : IDisposable
         string editBuffer = text.PadRight(length);
         bool IsInsertMode = false;
 
-        this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+        // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+        this.ChangeColor(_currentColorBackGround, _currentColorForeGround); 
         this.Position(row, col);
 
         while (true)
@@ -772,47 +790,17 @@ public class VideoTerminal : IDisposable
         return result;
     }
 
-    /*
-    public void ShowScreen(List<ScreenItem> items)
+    public ConsoleKeyInfo EditTextAt(ScreenItem item)
     {
-        foreach (ScreenItem item in items)
+        string text = item.Value;
+        ConsoleKeyInfo result = EditTextAt(item.Row, item.Col, ref text, item.Length, item.PasswordChar);
+        if (result.Key != ConsoleKey.Escape)
         {
-            if (!item.IsEditable)
-            {
-                // simple output
-                this.Write(item.Row, item.Col, item.Value);
-            }
-            else
-            {
-                // string dummyText = item.Value.PadRight(item.Length);
-                // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
-                // this.Write(item.Row, item.Col, item.Value);
-                // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
-
-                string dummyText = item.Value.PadRight(item.Length);
-                // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
-                // this.SetBold();
-                // this.SwapColors();
-                this.ColorInverseOn();
-
-                if (String.IsNullOrEmpty(item.PasswordChar))
-                {
-                    // simple output
-                    this.Write(item.Row, item.Col, item.Value.PadRight(item.Length));
-                }
-                else
-                {
-                    this.Write(item.Row, item.Col, (new string(item.PasswordChar[0], item.Value.Length)).PadRight(item.Length));
-                }
-
-                // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
-                // this.SetBold(false);
-                // this.SwapColors();
-                this.ColorInverseOff();
-            }
+            item.Value = text;
         }
+        return result;
     }
-    */
+
 }    
 
 public class MenueItem
@@ -975,12 +963,18 @@ public class ScreenItem
 public class EditScreen
 {
     VideoTerminal _vt = null;
+    TerminalColors _foreGroundLabel;
+    TerminalColors _backGroundLabel;
+    TerminalColors _foreGroundEdit;
+    TerminalColors _backGroundEdit;
+    TerminalColors _foreGroundCurrentEdit;
+    TerminalColors _backGroundCurrentEdit;
 
     public EditScreen(VideoTerminal vt)
     {
         _vt = vt;
     }
- 
+
     public void ShowScreen(List<ScreenItem> items)
     {
         foreach (ScreenItem item in items)
@@ -1020,5 +1014,239 @@ public class EditScreen
             }
         }
     }
+
+    public void ReadScreen(List<ScreenItem> items, bool exitOnEnter = false)
+    {
+        List<int> editItems = new List<int>();
+        int c = 0;
+
+        foreach (ScreenItem item in items)
+        {
+            if (item.IsEditable)
+            {
+                editItems.Add(c);
+            }
+            c++;
+        }
+
+        // edit as long you wish ....
+        if (editItems.Count > 0)
+        {
+            // int currentItem = editItems[0];
+            int currentItem = 0;
+            while (true)
+            {
+                ScreenItem si = items[editItems[currentItem]];
+
+                // ConsoleKeyInfo cki = _vt.EditTextAt(si);
+                ConsoleKeyInfo cki = this.EditTextBox(si);
+                if (cki.Key == ConsoleKey.Escape)
+                {
+                    break;
+                }
+                else if (cki.Modifiers == ConsoleModifiers.Control)
+                {
+                    if (cki.Key == ConsoleKey.S)
+                    {
+                        break;
+                    }
+                }
+
+                // handle results or whatever is needed
+
+                // depending on the result ...
+                currentItem++;
+                if (currentItem == editItems.Count)
+                {
+                    // depending on "roll over" or "quit" (actually we quit)
+                    // but not on testing ....
+                    // break;
+                    if (exitOnEnter && cki.Key == ConsoleKey.Enter)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        currentItem = 0;
+                    }
+                }
+            }
+        }
+    }
     
+    public ConsoleKeyInfo EditTextBox(int row, int col, ref string text, int length, string passwordChar = "")
+    {
+        string originalText = text;
+        ConsoleKeyInfo result = new ConsoleKeyInfo();
+        string editBuffer = text.PadRight(length);
+        bool IsInsertMode = false;
+
+        _vt.ChangeColor(_foreGroundCurrentEdit, _backGroundCurrentEdit); 
+        _vt.Position(row, col);
+
+        while (true)
+        {
+            int backupRow = _vt.Row();
+            int backupCol = _vt.Col();
+                
+            if (String.IsNullOrEmpty(passwordChar)) 
+            {
+                _vt.Write(row, col, editBuffer);
+            }
+            else
+            {
+                // TODO: fix 'visible spaces in passwords' bug
+                text = editBuffer.TrimEnd();
+                _vt.Write(row, col, (new string(passwordChar[0], text.Length)).PadRight(length));
+            }
+
+            _vt.Position(backupRow, backupCol);
+
+            result = Console.ReadKey(true);
+
+            if (result.Key == ConsoleKey.Enter)
+            {
+                break;
+            }
+            else if (result.Modifiers == ConsoleModifiers.Control) 
+            {
+                if (result.Key == ConsoleKey.S)
+                {
+                    break; 
+                }
+            }
+            else if (result.Key == ConsoleKey.Escape)
+            {
+                text = originalText;
+                break;
+            }
+            else if (result.Key == ConsoleKey.UpArrow)
+            {
+                break;
+            }            
+            else if (result.Key == ConsoleKey.Tab)
+            {
+                break;
+            }            
+            else if (result.Key == ConsoleKey.DownArrow)
+            {
+                break;
+            }         
+            else if (result.Key == ConsoleKey.RightArrow)
+            {
+                if (_vt.Col() < (col + length) - 1)
+                {
+                    _vt.Position(row, _vt.Col() + 1);
+                }
+            }   
+            else if (result.Key == ConsoleKey.LeftArrow)
+            {
+                if (_vt.Col() > col)
+                {
+                    _vt.Position(row, _vt.Col() - 1);
+                }
+            }   
+            else if (result.Key == ConsoleKey.Home)
+            {
+                _vt.Position(row, col);
+            }              
+            else if (result.Key == ConsoleKey.End)
+            {
+                _vt.Position(row, col + length - 1);
+            }              
+            else if (result.Key == ConsoleKey.Insert)
+            {
+                IsInsertMode = !IsInsertMode;
+            }              
+            else if (result.Key == ConsoleKey.Backspace)
+            {
+                int pos = (backupCol - col);
+
+                if (pos > 0)
+                {
+                    editBuffer = editBuffer.Substring(0, pos - 1) + editBuffer.Substring(pos);
+                    editBuffer = editBuffer.PadRight(length);
+                    _vt.Position(row, _vt.Col() - 1);
+                }
+            }              
+            else if (result.Key == ConsoleKey.Delete)
+            {
+                int pos = (backupCol - col);
+
+                if (pos < length)
+                {
+                    editBuffer = editBuffer.Substring(0, pos) + editBuffer.Substring(pos + 1);
+                    editBuffer = editBuffer.PadRight(length);
+                }
+            }              
+            else
+            {
+                backupRow = _vt.Row();
+                backupCol = _vt.Col();
+
+                char charInput = result.KeyChar;
+
+                // this.Write(15, 85, "Textwert ...: " + editBuffer);
+                // this.Write(15, 85, "Pressed Key : " + charInput);
+
+                _vt.Position(backupRow, backupCol);
+
+                int pos = (backupCol - col);
+
+                if (IsInsertMode)
+                {
+                    if (pos == 0)
+                    {
+                        editBuffer = charInput + editBuffer;
+                        editBuffer = editBuffer.Substring(0, length);
+                    }
+                    else
+                    {
+                        editBuffer = editBuffer.Substring(0, pos) + charInput + editBuffer.Substring(pos);
+                        editBuffer = editBuffer.Substring(0, length);
+                    }
+                }
+                else
+                {
+                    char[] edit = editBuffer.ToCharArray(0, length);
+                    edit[pos] = charInput;
+                    editBuffer = new string(edit);
+
+                }
+
+                if (_vt.Col() < (col + length) - 1)
+                {
+                    _vt.Position(row, _vt.Col() + 1);
+                }
+            }
+        }
+
+        text = editBuffer.TrimEnd();
+
+        // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+        _vt.ChangeColor(_foreGroundEdit, _backGroundEdit);
+
+        if (String.IsNullOrEmpty(passwordChar))
+        {
+            _vt.Write(row, col, editBuffer);
+        }
+        else
+        {
+            _vt.Write(row, col, (new string(passwordChar[0], text.Length)).PadRight(length));
+        }
+
+        return result;
+    }
+
+    public ConsoleKeyInfo EditTextBox(ScreenItem item)
+    {
+        string text = item.Value;
+        ConsoleKeyInfo result = EditTextBox(item.Row, item.Col, ref text, item.Length, item.PasswordChar);
+        if (result.Key != ConsoleKey.Escape)
+        {
+            item.Value = text;
+        }
+        return result;
+    }
+
 }

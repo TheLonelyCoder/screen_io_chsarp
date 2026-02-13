@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.1.19    'ReadScreen' added
     2026-02-13    0.3.1.18    added test for read only values
     2026-02-13    0.3.1.17    change 'ShowScreen' => class 'EditScreen'
     2026-02-13    0.3.0.16    minor improvements
@@ -85,6 +86,7 @@ void RunShowScreenTest(VideoTerminal vt)
 
     EditScreen myEditScreen = new EditScreen(vt);
     myEditScreen.ShowScreen(myScreen);
+    myEditScreen.ReadScreen(myScreen);
 
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);
     vt.WaitMessage(15, 10, "press any key");
