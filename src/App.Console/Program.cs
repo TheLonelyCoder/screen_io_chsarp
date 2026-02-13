@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.1.20    Color quirks with edit
     2026-02-13    0.3.1.19    'ReadScreen' added
     2026-02-13    0.3.1.18    added test for read only values
     2026-02-13    0.3.1.17    change 'ShowScreen' => class 'EditScreen'
@@ -86,10 +87,29 @@ void RunShowScreenTest(VideoTerminal vt)
 
     EditScreen myEditScreen = new EditScreen(vt);
     myEditScreen.ShowScreen(myScreen);
+    vt.WaitMessage(15, 10, "press any key ...");
+    vt.Write(15,10,        "                 ");
+
+    vt.CursorOn();
     myEditScreen.ReadScreen(myScreen);
+    vt.CursorOff();
 
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);
-    vt.WaitMessage(15, 10, "press any key");
+    vt.Write(14, 10, forthelement);
+    vt.WaitMessage(15, 10, "press any key ...");
+
+    vt.ClearScreen();
+    vt.Box();
+
+    int element = 0;
+    foreach (ScreenItem si in myScreen)
+    {
+        vt.Write( 4 + element,  5, si.ID);
+        vt.Write( 4 + element, 15, si.Value);
+        element++;
+    }
+
+    vt.WaitMessage(15, 10, "press any key ...");
 }
 
 void RunEditTextAtTest(VideoTerminal vt)
