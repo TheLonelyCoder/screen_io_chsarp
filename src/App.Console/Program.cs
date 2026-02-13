@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.0.16    minor improvements
     2026-02-13    0.3.0.15    Test for 'ShowScreen' added
     2026-02-12    0.2.0.14    Text 'EditTextAt' (withount passwordchar)
     2026-02-12    0.2.0.13    Text 'EditTextAt' (with passwordchar) - improved
@@ -65,15 +66,17 @@ void RunShowScreenTest(VideoTerminal vt)
     vt.ClearScreen();
     vt.Box();
 
-    vt.ClearScreen();
-
     string mytext = "test 1";
     string zweitesfeld = "aksdjfkajkfls";
+    string thirdelement = "yet another test";
     List<ScreenItem> myScreen = new List<ScreenItem>();
     myScreen.Add(new ScreenItem(5, 5, "Label: "));
     myScreen.Add(new ScreenItem(5, 25, mytext, 20));
     myScreen.Add(new ScreenItem(7, 5, "Label: "));
     myScreen.Add(new ScreenItem(7, 25, zweitesfeld, 30));
+    myScreen.Add(new ScreenItem(9, 5, "and again: "));
+    myScreen.Add(new ScreenItem(9, 25, thirdelement, 30));
+
     vt.ShowScreen(myScreen);
 
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);

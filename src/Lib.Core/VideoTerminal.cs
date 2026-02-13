@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.0.22    'ShowScreen' color quirks fixed
     2026-02-13    0.3.0.21    'ShowScreen' added
     2026-02-12    0.2.0.20    'EditTextAt' without Password char (optional now)
     2026-02-12    0.2.0.19    Added 'EditTextAt' method to 'VideoTerminal'
@@ -454,6 +455,14 @@ public class VideoTerminal : IDisposable
         SetColor(color.ForeGround, color.BackGround);
     }
 
+    public void SwapColors()
+    {
+        TerminalColors swap = _currentColorBackGround;
+        _currentColorBackGround = _currentColorForeGround;
+        _currentColorForeGround = swap;
+        Console.Write($"\x1b[{(int)TerminalColorsArea.ForeGround + (int)_currentColorForeGround}m\x1b[{(int)TerminalColorsArea.BackGround + (int)_currentColorBackGround}m");
+    }
+
     public void SetBold(bool bold = true)
     {
         if (bold)
@@ -777,7 +786,8 @@ public class VideoTerminal : IDisposable
 
                 string dummyText = item.Value.PadRight(item.Length);
                 // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
-                this.SetBold();
+                // this.SetBold();
+                this.SwapColors();
 
                 if (String.IsNullOrEmpty(item.PasswordChar))
                 {
@@ -790,7 +800,8 @@ public class VideoTerminal : IDisposable
                 }
 
                 // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
-                this.SetBold(false);
+                // this.SetBold(false);
+                this.SwapColors();
             }
         }
     }
