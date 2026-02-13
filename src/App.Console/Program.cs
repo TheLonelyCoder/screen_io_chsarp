@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.0.15    Test for 'ShowScreen' added
     2026-02-12    0.2.0.14    Text 'EditTextAt' (withount passwordchar)
     2026-02-12    0.2.0.13    Text 'EditTextAt' (with passwordchar) - improved
     2026-02-12    0.2.0.12    Text 'EditTextAt' (with passwordchar)
@@ -31,6 +32,8 @@
 
 using AnsiVideoTerminal;
 
+using System.Runtime.CompilerServices;
+
 var _appVer = typeof(Program).Assembly.GetName().Version?.ToString() ?? "?";
 var _libVer = typeof(VideoTerminal).Assembly.GetName().Version?.ToString() ?? "?";
 
@@ -48,12 +51,34 @@ using (var _vt = new VideoTerminal())
 
     // RunBasicMenueTest(_vt, _appVer, _libVer);
 
-    RunEditTextAtTest(_vt);
+    // RunEditTextAtTest(_vt);
+
+    RunShowScreenTest(_vt);
     
     _vt.UsePrimaryBuffer();
     _vt.CursorOn();
 }
 
+void RunShowScreenTest(VideoTerminal vt)
+{
+    vt.SetColor(TerminalColors.Green, TerminalColors.Black);
+    vt.ClearScreen();
+    vt.Box();
+
+    vt.ClearScreen();
+
+    string mytext = "test 1";
+    string zweitesfeld = "aksdjfkajkfls";
+    List<ScreenItem> myScreen = new List<ScreenItem>();
+    myScreen.Add(new ScreenItem(5, 5, "Label: "));
+    myScreen.Add(new ScreenItem(5, 25, mytext, 20));
+    myScreen.Add(new ScreenItem(7, 5, "Label: "));
+    myScreen.Add(new ScreenItem(7, 25, zweitesfeld, 30));
+    vt.ShowScreen(myScreen);
+
+    vt.SetColor(TerminalColors.Green, TerminalColors.Black);
+    vt.WaitMessage(12, 10, "press any key");
+}
 
 void RunEditTextAtTest(VideoTerminal vt)
 {
@@ -62,7 +87,7 @@ void RunEditTextAtTest(VideoTerminal vt)
     vt.Box();
 
     vt.ClearScreen();
-    string mytext = "versuch 1";
+    string mytext = "test 1";
     vt.CursorOn();
     ConsoleKeyInfo cki = vt.EditTextAt(10, 10, ref mytext, 22);
     vt.CursorOff();

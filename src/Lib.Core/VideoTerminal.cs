@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.0.21    'ShowScreen' added
     2026-02-12    0.2.0.20    'EditTextAt' without Password char (optional now)
     2026-02-12    0.2.0.19    Added 'EditTextAt' method to 'VideoTerminal'
     2026-02-12    0.1.0.18    Added 'ScreenItem' Class
@@ -758,6 +759,41 @@ public class VideoTerminal : IDisposable
         return result;
     }
 
+    public void ShowScreen(List<ScreenItem> items)
+    {
+        foreach (ScreenItem item in items)
+        {
+            if (!item.IsEditable)
+            {
+                // simple output
+                this.Write(item.Row, item.Col, item.Value);
+            }
+            else
+            {
+                // string dummyText = item.Value.PadRight(item.Length);
+                // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+                // this.Write(item.Row, item.Col, item.Value);
+                // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+
+                string dummyText = item.Value.PadRight(item.Length);
+                // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
+                this.SetBold();
+
+                if (String.IsNullOrEmpty(item.PasswordChar))
+                {
+                    // simple output
+                    this.Write(item.Row, item.Col, item.Value.PadRight(item.Length));
+                }
+                else
+                {
+                    this.Write(item.Row, item.Col, (new string(item.PasswordChar[0], item.Value.Length)).PadRight(item.Length));
+                }
+
+                // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
+                this.SetBold(false);
+            }
+        }
+    }
 }    
 
 public class MenueItem
