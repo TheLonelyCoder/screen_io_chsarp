@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-13    0.3.1.18    added test for read only values
     2026-02-13    0.3.1.17    change 'ShowScreen' => class 'EditScreen'
     2026-02-13    0.3.0.16    minor improvements
     2026-02-13    0.3.0.15    Test for 'ShowScreen' added
@@ -70,19 +71,23 @@ void RunShowScreenTest(VideoTerminal vt)
     string mytext = "test 1";
     string zweitesfeld = "aksdjfkajkfls";
     string thirdelement = "yet another test";
+    string forthelement = "4th entry";
     List<ScreenItem> myScreen = new List<ScreenItem>();
     myScreen.Add(new ScreenItem(5, 5, "Label: "));
     myScreen.Add(new ScreenItem(5, 25, mytext, 20));
     myScreen.Add(new ScreenItem(7, 5, "Label: "));
     myScreen.Add(new ScreenItem(7, 25, zweitesfeld, 30));
     myScreen.Add(new ScreenItem(9, 5, "and again: "));
-    myScreen.Add(new ScreenItem(9, 25, thirdelement, 30));
+    myScreen.Add(new ScreenItem(9, 25, thirdelement));
+    myScreen.Add(new ScreenItem(11, 5, "never ending: "));
+    myScreen.Add(new ScreenItem(11, 25, forthelement, 30));
+
 
     EditScreen myEditScreen = new EditScreen(vt);
     myEditScreen.ShowScreen(myScreen);
 
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);
-    vt.WaitMessage(12, 10, "press any key");
+    vt.WaitMessage(15, 10, "press any key");
 }
 
 void RunEditTextAtTest(VideoTerminal vt)
