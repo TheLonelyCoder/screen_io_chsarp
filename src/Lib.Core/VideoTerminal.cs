@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-14    0.3.3.28    Color settings for 'ReadScreen'
     2026-02-13    0.3.2.27    'ReadScreen' Arrow Keys now working correct, Tab & Shift-Tab too
     2026-02-13    0.3.1.26    'ReadScreen' color quirks
     2026-02-13    0.3.1.25    'ReadScreen' added
@@ -489,11 +490,23 @@ public class VideoTerminal : IDisposable
     {
         if (bold)
         {
-            Console.Write($"\x1b[1m");
+            Console.Write("\x1b[1m");
         }
         else
         {
-            Console.Write($"\x1b[21m");
+            Console.Write("\x1b[22m");   // <-- statt 21m
+        }
+    }
+
+    public void SetUnderline(bool underline = true)
+    {
+        if (underline)
+        {
+            Console.Write("\x1b[4m");
+        }
+        else
+        {
+            Console.Write("\x1b[24m");
         }
     }
 
@@ -964,6 +977,8 @@ public class ScreenItem
 public class EditScreen
 {
     VideoTerminal _vt = null;
+    bool _useCurrentTerminalColors = true;
+    
     TerminalColors _foreGroundLabel;
     TerminalColors _backGroundLabel;
     TerminalColors _foreGroundEdit;
@@ -974,6 +989,11 @@ public class EditScreen
     public EditScreen(VideoTerminal vt)
     {
         _vt = vt;
+    }
+
+    public void SetColorScheme()
+    {
+        _useCurrentTerminalColors = false;
     }
 
     public void ShowScreen(List<ScreenItem> items)
@@ -996,7 +1016,15 @@ public class EditScreen
                 // this.SetColor(_currentColorBackGround, _currentColorForeGround); 
                 // this.SetBold();
                 // this.SwapColors();
-                _vt.ColorInverseOn();
+                // _vt.ColorInverseOn();
+                if (_useCurrentTerminalColors)
+                {
+                    _vt.SetUnderline(true);
+                }
+                else
+                {
+                    // TODO: use class color set
+                }
 
                 if (String.IsNullOrEmpty(item.PasswordChar))
                 {
@@ -1011,7 +1039,16 @@ public class EditScreen
                 // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
                 // this.SetBold(false);
                 // this.SwapColors();
-                _vt.ColorInverseOff();
+                //_vt.ColorInverseOff();
+                if (_useCurrentTerminalColors)
+                {
+                    _vt.SetUnderline(false);
+                }
+                else
+                {
+                    // TODO: use class color set
+                }
+                
             }
         }
     }
@@ -1069,20 +1106,30 @@ public class EditScreen
                     currentItem++;
                 }
                 if (currentItem == editItems.Count)
+                {
+                    // depending on "roll over" or "quit" (actually we quit)
+                    // but not on testing ....
+                    // break;
+                    if (exitOnEnter && cki.Key == ConsoleKey.Enter)
                     {
-                        // depending on "roll over" or "quit" (actually we quit)
-                        // but not on testing ....
-                        // break;
-                        if (exitOnEnter && cki.Key == ConsoleKey.Enter)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            currentItem = 0;
-                        }
+                        break;
                     }
+                    else
+                    {
+                        currentItem = 0;
+                    }
+                }
             }
+        }
+
+        if (_useCurrentTerminalColors)
+        {
+            _vt.SetUnderline(false);
+            _vt.SetBold(false);
+        }
+        else
+        {
+            // TODO: use class color set
         }
     }
     
@@ -1093,7 +1140,16 @@ public class EditScreen
         string editBuffer = text.PadRight(length);
         bool IsInsertMode = false;
 
-        _vt.ChangeColor(_foreGroundCurrentEdit, _backGroundCurrentEdit); 
+        if (_useCurrentTerminalColors)
+        {
+            _vt.SetUnderline(false);
+            _vt.SetBold(true);
+        }
+        else
+        {
+            // TODO: use class color set
+        }
+        
         _vt.Position(row, col);
 
         while (true)
@@ -1198,9 +1254,6 @@ public class EditScreen
 
                 char charInput = result.KeyChar;
 
-                // this.Write(15, 85, "Textwert ...: " + editBuffer);
-                // this.Write(15, 85, "Pressed Key : " + charInput);
-
                 _vt.Position(backupRow, backupCol);
 
                 int pos = (backupCol - col);
@@ -1223,7 +1276,6 @@ public class EditScreen
                     char[] edit = editBuffer.ToCharArray(0, length);
                     edit[pos] = charInput;
                     editBuffer = new string(edit);
-
                 }
 
                 if (_vt.Col() < (col + length) - 1)
@@ -1235,8 +1287,15 @@ public class EditScreen
 
         text = editBuffer.TrimEnd();
 
-        // this.SetColor(_currentColorForeGround, _currentColorBackGround); 
-        _vt.ChangeColor(_foreGroundEdit, _backGroundEdit);
+        if (_useCurrentTerminalColors)
+        {
+            _vt.SetUnderline(true);
+            _vt.SetBold(false);
+        }
+        else
+        {
+            // TODO: use class color set
+        }
 
         if (String.IsNullOrEmpty(passwordChar))
         {
