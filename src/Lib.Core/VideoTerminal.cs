@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-14    0.4.0.29    'ReadScreen' renamed to 'Read', 'ShowScreen' renamed to 'Show' and 'EditScreen' => 'ScreenForm'
     2026-02-14    0.3.3.28    Color settings for 'ReadScreen'
     2026-02-13    0.3.2.27    'ReadScreen' Arrow Keys now working correct, Tab & Shift-Tab too
     2026-02-13    0.3.1.26    'ReadScreen' color quirks
@@ -974,7 +975,7 @@ public class ScreenItem
     }
 }
 
-public class EditScreen
+public class ScreenForm
 {
     VideoTerminal _vt = null;
     bool _useCurrentTerminalColors = true;
@@ -986,7 +987,7 @@ public class EditScreen
     TerminalColors _foreGroundCurrentEdit;
     TerminalColors _backGroundCurrentEdit;
 
-    public EditScreen(VideoTerminal vt)
+    public ScreenForm(VideoTerminal vt)
     {
         _vt = vt;
     }
@@ -996,7 +997,7 @@ public class EditScreen
         _useCurrentTerminalColors = false;
     }
 
-    public void ShowScreen(List<ScreenItem> items)
+    public void Show(List<ScreenItem> items)
     {
         foreach (ScreenItem item in items)
         {
@@ -1053,7 +1054,7 @@ public class EditScreen
         }
     }
 
-    public void ReadScreen(List<ScreenItem> items, bool exitOnEnter = false)
+    public void Read(List<ScreenItem> items, bool exitOnEnter = false)
     {
         List<int> editItems = new List<int>();
         int c = 0;
@@ -1319,5 +1320,4 @@ public class EditScreen
         }
         return result;
     }
-
 }

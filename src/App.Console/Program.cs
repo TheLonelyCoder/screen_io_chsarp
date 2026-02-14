@@ -85,13 +85,13 @@ void RunShowScreenTest(VideoTerminal vt)
     myScreen.Add(new ScreenItem(11, 25, forthelement, 30));
 
 
-    EditScreen myEditScreen = new EditScreen(vt);
-    myEditScreen.ShowScreen(myScreen);
+    ScreenForm myEditScreen = new ScreenForm(vt);
+    myEditScreen.Show(myScreen);
     vt.WaitMessage(15, 10, "press any key ...");
     vt.Write(15,10,        "                 ");
 
     vt.CursorOn();
-    myEditScreen.ReadScreen(myScreen);
+    myEditScreen.Read(myScreen);
     vt.CursorOff();
 
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);
