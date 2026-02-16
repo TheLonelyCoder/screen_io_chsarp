@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-14    0.4.1.30    change default color style when no colors set for 'ScreenForm'
     2026-02-14    0.4.0.29    'ReadScreen' renamed to 'Read', 'ShowScreen' renamed to 'Show' and 'EditScreen' => 'ScreenForm'
     2026-02-14    0.3.3.28    Color settings for 'ReadScreen'
     2026-02-13    0.3.2.27    'ReadScreen' Arrow Keys now working correct, Tab & Shift-Tab too
@@ -997,6 +998,44 @@ public class ScreenForm
         _useCurrentTerminalColors = false;
     }
 
+    /// <summary>
+    /// Set forground and background color for display text, display edit field and the color for the actual field in the form
+    /// </summary>
+    /// <param name="foreGround"></param>
+    /// <param name="backGround"></param>
+    /// <param name="foreGroundEdit"></param>
+    /// <param name="backGroundEdit"></param>
+    /// <param name="foreGroundEditCurrentField"></param>
+    /// <param name="backGroundEditCurrentField"></param>
+    public void SetColorScheme(TerminalColors foreGround, TerminalColors backGround, TerminalColors foreGroundEdit, TerminalColors backGroundEdit, TerminalColors foreGroundEditCurrentField, TerminalColors backGroundEditCurrentField)
+    {
+        _useCurrentTerminalColors = true;
+
+        _vt.SetColor(_foreGroundLabel, _backGroundLabel);
+
+        _foreGroundLabel = foreGround;
+        _backGroundLabel = backGround;
+        _foreGroundEdit = foreGroundEdit;
+        _backGroundEdit = backGroundEdit;
+        _foreGroundCurrentEdit = foreGroundEditCurrentField;
+        _backGroundCurrentEdit = backGroundEditCurrentField;
+    }
+
+    /// <summary>
+    /// Set foreground and background color and use default behavior for display and read edit fields
+    /// </summary>
+    /// <param name="foreGround"></param>
+    /// <param name="backGround"></param>
+    public void SetColorScheme(TerminalColors foreGround, TerminalColors backGround)
+    {
+        _useCurrentTerminalColors = false;
+
+        _vt.SetColor(_foreGroundLabel, _backGroundLabel);
+
+        _foreGroundLabel = foreGround;
+        _backGroundLabel = backGround;
+    }
+
     public void Show(List<ScreenItem> items)
     {
         foreach (ScreenItem item in items)
@@ -1049,7 +1088,7 @@ public class ScreenForm
                 {
                     // TODO: use class color set
                 }
-                
+
             }
         }
     }
