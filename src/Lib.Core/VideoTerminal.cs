@@ -11,6 +11,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-18    0.4.1.31    Added VT-SIGN-2026-02-18-TheLonelyCoder-9f3c2a7d2b4e4a6e
     2026-02-14    0.4.1.30    change default color style when no colors set for 'ScreenForm'
     2026-02-14    0.4.0.29    'ReadScreen' renamed to 'Read', 'ShowScreen' renamed to 'Show' and 'EditScreen' => 'ScreenForm'
     2026-02-14    0.3.3.28    Color settings for 'ReadScreen'
