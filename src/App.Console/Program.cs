@@ -10,6 +10,7 @@
     --------------------------------------------------------------------------------------------------------------------------
     DATE          VERSION     DESCRITPION
     --------------------------------------------------------------------------------------------------------------------------
+    2026-02-18    0.3.2.22    Add addtional Test (Exit read screen with "Enter" Key)
     2026-02-18    0.3.1.21    Added VT-SIGN-2026-02-18-TheLonelyCoder-9f3c2a7d2b4e4a6e
     2026-02-13    0.3.1.20    Color quirks with edit
     2026-02-13    0.3.1.19    'ReadScreen' added
@@ -60,12 +61,62 @@ using (var _vt = new VideoTerminal())
     // RunEditTextAtTest(_vt);
 
     RunShowScreenTest(_vt);
-    
+
+    RunShowScreenTest2(_vt);
+
     _vt.UsePrimaryBuffer();
     _vt.CursorOn();
 }
 
 void RunShowScreenTest(VideoTerminal vt)
+{
+    vt.SetColor(TerminalColors.Green, TerminalColors.Black);
+    vt.ClearScreen();
+    vt.Box();
+
+    string mytext = "noch ein test";
+    string zweitesfeld = "aksdjfkajkfls";
+    string thirdelement = "Mit Enter im nächsten Feld Exit";
+    string forthelement = "4th entry";
+    List<ScreenItem> myScreen = new List<ScreenItem>();
+    myScreen.Add(new ScreenItem(5, 5, "Label: "));
+    myScreen.Add(new ScreenItem(5, 25, mytext, 20));
+    myScreen.Add(new ScreenItem(7, 5, "Label: "));
+    myScreen.Add(new ScreenItem(7, 25, zweitesfeld, 30));
+    myScreen.Add(new ScreenItem(9, 5, "and again: "));
+    myScreen.Add(new ScreenItem(9, 25, thirdelement));
+    myScreen.Add(new ScreenItem(11, 5, "never ending: "));
+    myScreen.Add(new ScreenItem(11, 25, forthelement, 30));
+
+
+    ScreenForm myEditScreen = new ScreenForm(vt);
+    myEditScreen.Show(myScreen);
+    vt.WaitMessage(15, 10, "press any key ...");
+    vt.Write(15,10,        "                 ");
+
+    vt.CursorOn();
+    myEditScreen.Read(myScreen, true);
+    vt.CursorOff();
+
+    vt.SetColor(TerminalColors.Green, TerminalColors.Black);
+    vt.Write(14, 10, forthelement);
+    vt.WaitMessage(15, 10, "press any key ...");
+
+    vt.ClearScreen();
+    vt.Box();
+
+    int element = 0;
+    foreach (ScreenItem si in myScreen)
+    {
+        vt.Write( 4 + element,  5, si.ID);
+        vt.Write( 4 + element, 15, si.Value);
+        element++;
+    }
+
+    vt.WaitMessage(15, 10, "press any key ...");
+}
+
+void RunShowScreenTest2(VideoTerminal vt)
 {
     vt.SetColor(TerminalColors.Green, TerminalColors.Black);
     vt.ClearScreen();
@@ -112,6 +163,7 @@ void RunShowScreenTest(VideoTerminal vt)
 
     vt.WaitMessage(15, 10, "press any key ...");
 }
+
 
 void RunEditTextAtTest(VideoTerminal vt)
 {
