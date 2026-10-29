@@ -1,3 +1,5 @@
+# moved to: https://codeberg.org/TheLonelyCoder/screen_io_chsarp
+
 # VideoTerminal Screen I/O
 
 ## Motivation
